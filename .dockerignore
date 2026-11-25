@@ -1,4 +1,6 @@
 node_modules
+.direnv
+.next
 npm-debug.log
 pnpm-debug.log
 .github

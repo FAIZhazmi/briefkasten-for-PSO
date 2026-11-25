@@ -21,6 +21,11 @@
     "db:studio": "pnpm exec prisma studio"
   },
   "packageManager": "pnpm@9.5.0",
+  "pnpm": {
+    "overrides": {
+      "re2": "1.27.2"
+    }
+  },
   "dependencies": {
     "@headlessui/react": "^1.7.7",
     "@next-auth/prisma-adapter": "^1.0.5",

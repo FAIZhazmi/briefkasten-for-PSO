@@ -1,4 +1,4 @@
-FROM node:18-bookworm-slim as dependencies
+FROM node:22-bookworm-slim as dependencies
 
 LABEL org.opencontainers.image.title="Briefkasten" \
   org.opencontainers.image.description="Modern Bookmarking Application" \
@@ -13,7 +13,7 @@ LABEL org.opencontainers.image.title="Briefkasten" \
 WORKDIR /app
 
 # Install pnpm
-RUN npm install -g pnpm; \
+RUN npm install -g pnpm@9.5.0; \
   pnpm --version; \
   pnpm setup; \
   mkdir -p /usr/local/share/pnpm &&\
@@ -29,12 +29,12 @@ COPY package.json pnpm-lock.yaml prisma ./
 RUN pnpm install --frozen-lockfile
 
 # ---- Build ----
-FROM node:18-bookworm-slim as build
+FROM node:22-bookworm-slim as build
 WORKDIR /app
 
 # Install pnpm
 # @TODO: Copy from 'dependencies'
-RUN npm install -g pnpm; \
+RUN npm install -g pnpm@9.5.0; \
   pnpm --version; \
   pnpm setup; \
   mkdir -p /usr/local/share/pnpm &&\
@@ -49,11 +49,11 @@ COPY . .
 RUN apt-get update && apt-get install -y openssl
 
 # build project
-RUN pnpm dlx prisma generate
+RUN pnpm exec prisma generate
 RUN pnpm build
 
 # ---- Release ----
-FROM node:18-bookworm-slim as release
+FROM node:22-bookworm-slim as release
 WORKDIR /app
 
 # openssl for prisma
@@ -61,7 +61,7 @@ RUN apt-get update && apt-get install -y openssl
 
 # Install pnpm
 # @TODO: Copy from 'build'
-RUN npm install -g pnpm; \
+RUN npm install -g pnpm@9.5.0; \
   pnpm --version; \
   pnpm setup; \
   mkdir -p /usr/local/share/pnpm &&\
