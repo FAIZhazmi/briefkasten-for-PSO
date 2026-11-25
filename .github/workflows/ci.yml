@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [v1]
+  pull_request:
+    branches: [v1]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build on Node 22
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Prisma validation uses a placeholder URL. No database is needed for the build.
+      DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/briefkasten_ci
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate and generate Prisma Client
+        run: |
+          pnpm exec prisma validate
+          pnpm exec prisma generate
+
+      - name: Build Next.js
+        run: pnpm build
