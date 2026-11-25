@@ -1,11 +1,12 @@
 name: Publish Docker image
 
 on:
-  push:
+  workflow_dispatch:
 
 jobs:
   docker_push:
     name: Push Docker image to Docker Hub
+    if: github.repository == 'ndom91/briefkasten'
     environment: production
     runs-on: ubuntu-latest
     steps:

@@ -16,6 +16,7 @@ if (process.env.GITHUB_ID) {
     GithubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
+      issuer: 'https://github.com/login/oauth',
     })
   )
 }
@@ -120,10 +121,9 @@ export const authOptions = {
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV !== 'production',
 }
 
-// Next-auth passes through all options gotten from keycloak, excessive ones must be removed.
+// Drop provider metadata that the Prisma Account schema does not store.
 const adapterOverwrite = PrismaAdapter(prisma)
 
 authOptions.adapter = {
@@ -131,6 +131,7 @@ authOptions.adapter = {
   linkAccount: (account) => {
     delete account['not-before-policy']
     delete account['refresh_expires_in']
+    delete account.refresh_token_expires_in
     return adapterOverwrite.linkAccount(account)
   },
 }
